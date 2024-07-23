@@ -47,6 +47,39 @@ services:
     environment:
       - INFLUXDB_URL=http://influxdb:8086
 
+  dbpostgres:
+    image: postgres:16.2
+    container_name: dbPolu2
+    #restart: always
+    # set shared memory limit when using docker-compose
+    shm_size: 128mb
+    ports:
+      - 5432:5432
+    volumes:
+      - /data:/var/lib/postgresql/data
+  #      - type: tmpfs
+  #    - target: /dev/shm
+  #        tmpfs:
+  #        size: 134217728 # 128*2^20 bytes = 128Mb
+    command: 
+      #postgres -c shared_preload_libraries=pg_stat_statements -c pg_stat_statements.track=all -c max_connections=199
+      - "-c"
+      - "max_connections=197"
+      - "-c"
+      - "shared_preload_libraries=pg_stat_statements"
+      - "-c"
+      - "pg_stat_statements.track=all"
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+
+  # adminer:
+  #  image: adminer
+  #  restart: always
+  #  ports:
+  #    - 8081:8080
+
 volumes:
   influxdb-storage:
   jenkins_home:
