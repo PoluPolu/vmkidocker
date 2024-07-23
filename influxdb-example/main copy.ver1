@@ -1,0 +1,62 @@
+package main
+
+import (
+	"fmt"
+	"log"
+	"time"
+
+	client "github.com/influxdata/influxdb1-client/v2"
+)
+
+func createClient() (client.Client, error) {
+	c, err := client.NewHTTPClient(client.HTTPConfig{
+		Addr:     "http://192.168.102.133:8086", // Replace with your InfluxDB address
+		Username: "admin",                       // Replace with your InfluxDB username
+		Password: "ubuntu",                      // Replace with your InfluxDB password
+	})
+	return c, err
+}
+
+func writeData(c client.Client) {
+	// Create a new point batch
+	bp, err := client.NewBatchPoints(client.BatchPointsConfig{
+		Database:  "cbj", // Replace with your InfluxDB database
+		Precision: "s",
+	})
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Create a point and add to batch
+	tags := map[string]string{"cpu": "cpu-total"}
+	fields := map[string]interface{}{
+		"idle":   11.1,
+		"system": 51.1,
+		"user":   41.1,
+	}
+
+	pt, err := client.NewPoint("cpu_usage", tags, fields, time.Now())
+	if err != nil {
+		log.Fatal(err)
+	}
+	bp.AddPoint(pt)
+
+	// Write the batch
+	if err := c.Write(bp); err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Println("Data written successfully")
+}
+
+func main() {
+	// Create a new HTTPClient
+	c, err := createClient()
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer c.Close()
+
+	// Write data
+	writeData(c)
+}
