@@ -1,0 +1,4 @@
+Gir: PoluPolu - haslo to jest token
+Jenkins haslo: Dupa123$
+
+
