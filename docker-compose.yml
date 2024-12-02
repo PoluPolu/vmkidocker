@@ -1,87 +1,19 @@
 services:
-  jenkins:
-    image: jenkins-go:latest #/jenkins:lts
-    container_name: jenkins
-    ports:
-      - "8080:8080"
-      - "50000:50000"
-    volumes:
-      - jenkins_home:/var/jenkins_home
-      - /var/run/docker.sock:/var/run/docker.sock
-
-  ssh-agent:
-    image: jenkins/ssh-agent
-
-  grafana:
-    image: grafana/grafana
-    container_name: grafana
-    ports:
-      - "3000:3000"
-    volumes:
-      - grafana-storage:/var/lib/grafana
+  postgres:
+    image: postgres:17.0
+    container_name: postgresdb
+    restart: always
+    shm_size: 256mb
     environment:
-      - GF_SECURITY_ADMIN_PASSWORD=ubuntu
-
-  influxdb:
-    image: influxdb:1.8.2
-    container_name: influxdb
-    ports:
-      - "8086:8086"
-    volumes:
-      - influxdb-storage:/var/lib/influxdb
-      - /home/ubuntu/jenkinsgrafana/influxdb.conf:/etc/influxdb/influxdb.conf
-    environment:
-      - INFLUXDB_DB=cbj
-      - INFLUXDB_ADMIN_USER=admin
-      - INFLUXDB_ADMIN_PASSWORD=ubuntu
-      - INFLUXDB_USER=user
-      - INFLUXDB_USER_PASSWORD=ubuntu
-
-  chronograf:
-    image: chronograf:latest
-    container_name: chronograf
-    ports:
-      - "8888:8888"
-        #    depends_on:
-        #- influxdb
-    environment:
-      - INFLUXDB_URL=http://influxdb:8086
-
-  dbpostgres:
-    image: postgres:16.2
-    container_name: dbPolu2
-    #restart: always
-    # set shared memory limit when using docker-compose
-    shm_size: 128mb
-    ports:
-      - 5432:5432
-    volumes:
-      - /data:/var/lib/postgresql/data
-  #      - type: tmpfs
-  #    - target: /dev/shm
-  #        tmpfs:
-  #        size: 134217728 # 128*2^20 bytes = 128Mb
-    command: 
-      #postgres -c shared_preload_libraries=pg_stat_statements -c pg_stat_statements.track=all -c max_connections=199
-      - "-c"
-      - "max_connections=197"
-      - "-c"
-      - "shared_preload_libraries=pg_stat_statements"
-      - "-c"
-      - "pg_stat_statements.track=all"
-    environment:
-      POSTGRES_DB: postgres
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+      PGDATA: /var/lib/postgresql/data/ 
+    ports:
+      - "5432:5432"
+    volumes:
+      - /data/postgres/data:/var/lib/postgresql/data  # Data directory
+      - /data/postgres/config:/etc/postgresql  # Configuration directory
+      - /data/vmkidocker/postgres/pg_hba.conf:/var/lib/postgresql/data/pg_hba.conf
+      - /data/vmkidocker/postgres/postgresql.conf:/var/lib/postgresql/data/postgresql.conf
 
-  # adminer:
-  #  image: adminer
-  #  restart: always
-  #  ports:
-  #    - 8081:8080
-
-volumes:
-  influxdb-storage:
-  jenkins_home:
-  grafana-storage:
-  influxdb-storage:
