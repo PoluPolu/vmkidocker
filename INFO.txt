@@ -1,4 +1,6 @@
-Gir: PoluPolu - haslo to jest token
-Jenkins haslo: Dupa123$
+Git: PoluPolu - haslo to jest token
+
+Jenkins: 
+U: polupolu P: Dupa123$
 
 

@@ -29,3 +29,15 @@ services:
 
   ssh-agent:
     image: jenkins/ssh-agent
+
+  grafana:
+    image: grafana/grafana:11.4.0-ubuntu
+    container_name: grafana
+    restart: unless-stopped
+    ports:
+      - "3000:3000" # Expose Grafana on port 3000
+    volumes:
+      - /data/grafana:/var/lib/grafana # Persistent storage for Grafana data
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin # Default admin username
+      - GF_SECURITY_ADMIN_PASSWORD=Dupa123$ # Default admin password
