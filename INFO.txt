@@ -1,0 +1,6 @@
+Git: PoluPolu - haslo to jest token
+
+Jenkins: 
+U: polupolu P: Dupa123$
+
+

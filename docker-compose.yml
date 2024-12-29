@@ -17,3 +17,27 @@ services:
       - /data/vmkidocker/postgres/pg_hba.conf:/var/lib/postgresql/data/pg_hba.conf
       - /data/vmkidocker/postgres/postgresql.conf:/var/lib/postgresql/data/postgresql.conf
 
+  jenkins:
+    image: jenkins/jenkins:lts
+    container_name: jenkins
+    ports:
+      - "8080:8080"
+      - "50000:50000"
+    volumes:
+      - /data/vmkidocker/jenkins:/var/jenkins_home
+      - /data/vmkidocker/jenkins/docker.sock:/var/run/docker.sock
+
+  ssh-agent:
+    image: jenkins/ssh-agent
+
+  grafana:
+    image: grafana/grafana:11.4.0-ubuntu
+    container_name: grafana
+    restart: unless-stopped
+    ports:
+      - "3000:3000" # Expose Grafana on port 3000
+    volumes:
+      - /data/grafana:/var/lib/grafana # Persistent storage for Grafana data
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin # Default admin username
+      - GF_SECURITY_ADMIN_PASSWORD=Dupa123$ # Default admin password
