@@ -1,7 +1,7 @@
 services:
   postgres:
     image: postgres:17.0
-    container_name: postgres
+    container_name: postgresdb
     restart: always
     shm_size: 256mb
     environment:
@@ -14,8 +14,8 @@ services:
     volumes:
       - /data/postgres/data:/var/lib/postgresql/data  # Data directory
       - /data/postgres/config:/etc/postgresql  # Configuration directory
-      - /data/postgres/config/pg_hba.conf:/var/lib/postgresql/data/pg_hba.conf
-      - /data/postgres/config/postgresql.conf:/var/lib/postgresql/data/postgresql.conf
+      - /data/vmkidocker/postgres/pg_hba.conf:/var/lib/postgresql/data/pg_hba.conf
+      - /data/vmkidocker/postgres/postgresql.conf:/var/lib/postgresql/data/postgresql.conf
 
   jenkins:
     image: jenkins/jenkins:lts
@@ -24,8 +24,8 @@ services:
       - "8082:8080"
       - "50000:50000"
     volumes:
-      - /data/jenkins:/var/jenkins_home
-      - /var/run/docker.sock:/var/run/docker.sock
+      - /data/vmkidocker/jenkins:/var/jenkins_home
+      - /data/vmkidocker/jenkins/docker.sock:/var/run/docker.sock
 
   ssh-agent:
     image: jenkins/ssh-agent
@@ -41,25 +41,3 @@ services:
     environment:
       - GF_SECURITY_ADMIN_USER=admin # Default admin username
       - GF_SECURITY_ADMIN_PASSWORD=Dupa123$ # Default admin password
-
-  portainer:
-    image: portainer/portainer-ce:2.27.1
-    container_name: portainer
-    restart: unless-stopped
-    ports:
-      - "9000:9000"
-      - "9443:9443"
-    volumes:
-      - /data/portainer:/data
-      - /var/run/docker.sock:/var/run/docker.sock
-
-  portainer_agent:
-    image: portainer/agent:2.27.1
-    container_name: portainer_agent
-    restart: unless-stopped
-    ports:
-      - "9001:9001"
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      - /data/portainer_agent:/var/lib/docker/volumes
-      - /:/host
